@@ -1,13 +1,8 @@
 {
     "name": "typhoon/endian",
     "description": "Read and Write bytes in any order.",
-    "type": "library",
     "license": "MIT",
-    "autoload": {
-        "psr-4": {
-            "Typhoon\\Endian\\": ""
-        }
-    },
+    "type": "library",
     "authors": [
         {
             "name": "kafkiansky",
@@ -22,8 +17,13 @@
             "homepage": "https://github.com/orgs/typhoon-php/people"
         }
     ],
-    "minimum-stability": "stable",
     "require": {
         "php": "^8.1"
+    },
+    "minimum-stability": "stable",
+    "autoload": {
+        "psr-4": {
+            "Typhoon\\Endian\\": ""
+        }
     }
 }
