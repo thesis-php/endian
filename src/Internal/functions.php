@@ -2,18 +2,16 @@
 
 declare(strict_types=1);
 
-namespace Typhoon\Endian\Internal;
+namespace Thesis\Endian\Internal;
 
-use Typhoon\Endian\endian;
+use Thesis\Endian\endian;
 
-if (!\defined('Typhoon\Endian\Internal\native')) {
-    /** @psalm-suppress InvalidArgument */
-    \define('Typhoon\Endian\Internal\native', namespace\isLittleEndianMachine() ? endian::little : endian::big);
+if (!\defined('Thesis\Endian\Internal\native')) {
+    \define('Thesis\Endian\Internal\native', namespace\isLittleEndianMachine() ? endian::little : endian::big);
 }
 
 /**
  * @internal
- * @psalm-internal Typhoon\Endian
  */
 function isLittleEndianMachine(): bool
 {
@@ -22,7 +20,6 @@ function isLittleEndianMachine(): bool
 
 /**
  * @internal
- * @psalm-internal Typhoon\Endian
  * @param non-empty-string $bytes
  * @param non-empty-string $format
  */
@@ -34,7 +31,6 @@ function unpackBytes(string $bytes, string $format): string|int|float
 
 /**
  * @internal
- * @psalm-internal Typhoon\Endian
  * @template T
  * @param T $value
  * @param non-empty-string $format

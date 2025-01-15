@@ -1,29 +1,78 @@
 {
-    "name": "typhoon/endian",
-    "description": "Read and Write bytes in any order.",
+    "name": "thesis/endian",
+    "description": "Library for encoding and decoding numbers in either big-endian or little-endian order.",
     "license": "MIT",
     "type": "library",
     "authors": [
-        {
-            "name": "kafkiansky",
-            "email": "vadimzanfir@gmail.com"
-        },
         {
             "name": "Valentin Udaltsov",
             "email": "udaltsov.valentin@gmail.com"
         },
         {
-            "name": "Typhoon Team",
-            "homepage": "https://github.com/orgs/typhoon-php/people"
+            "name": "kafkiansky",
+            "email": "vadimzanfir@gmail.com"
+        },
+        {
+            "name": "Thesis Team",
+            "homepage": "https://github.com/orgs/thesisphp/people"
         }
     ],
     "require": {
-        "php": "^8.1"
+        "php": "^8.3"
+    },
+    "require-dev": {
+        "bamarni/composer-bin-plugin": "^1.8.2",
+        "ergebnis/composer-normalize": "^2.45.0",
+        "phpunit/phpunit": "^10.5.40"
     },
     "minimum-stability": "stable",
     "autoload": {
         "psr-4": {
-            "Typhoon\\Endian\\": ""
+            "Thesis\\Endian\\": "src/"
+        },
+        "files": [
+            "src/Internal/functions.php"
+        ]
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Thesis\\Endian\\": "tests/"
         }
+    },
+    "config": {
+        "allow-plugins": {
+            "bamarni/composer-bin-plugin": true,
+            "ergebnis/composer-normalize": true
+        },
+        "bump-after-update": "dev",
+        "platform": {
+            "php": "8.3"
+        },
+        "sort-packages": true
+    },
+    "extra": {
+        "bamarni-bin": {
+            "bin-links": false,
+            "forward-command": true,
+            "target-directory": "tools"
+        }
+    },
+    "scripts": {
+        "check": [
+            "@composer fixcs -- --dry-run",
+            "@phpstan",
+            "@test",
+            "@composer validate",
+            "@composer normalize --dry-run",
+            "@check-require",
+            "@check-unused"
+        ],
+        "check-require": "tools/composer-require-checker/vendor/bin/composer-require-checker",
+        "check-unused": "tools/composer-unused/vendor/bin/composer-unused",
+        "fixcs": "tools/php-cs-fixer/vendor/bin/php-cs-fixer fix --diff --verbose",
+        "infection": "tools/infection/vendor/bin/infection --show-mutations",
+        "phpstan": "tools/phpstan/vendor/bin/phpstan analyze",
+        "pre-command-run": "mkdir -p var",
+        "test": "phpunit"
     }
 }

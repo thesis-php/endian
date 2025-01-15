@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Typhoon\Endian;
+namespace Thesis\Endian;
 
 /**
  * @api
@@ -47,11 +47,10 @@ enum endian
 
     /**
      * @param non-empty-string $v
-     * @return non-negative-int
+     * @return int<0, 255>
      */
     public function unpackUint8(string $v): int
     {
-        /** @var non-negative-int */
         return \ord($v);
     }
 
@@ -61,10 +60,10 @@ enum endian
     public function packInt16(int $v): string
     {
         if ($v < 0) {
-            /** @var non-negative-int $v */
             $v = (1 << 16) + $v;
         }
 
+        /** @phpstan-ignore argument.type */
         return $this->packUint16($v);
     }
 
@@ -113,10 +112,10 @@ enum endian
     public function packInt32(int $v): string
     {
         if ($v < 0) {
-            /** @var non-negative-int $v */
             $v = (1 << 32) + $v;
         }
 
+        /** @phpstan-ignore argument.type */
         return $this->packUint32($v);
     }
 
@@ -218,7 +217,6 @@ enum endian
      */
     public function unpackUint64(string $v): int
     {
-        /** @var non-negative-int */
         return match ($this) {
             self::big => \ord($v[7])
                 | \ord($v[6]) << 8
