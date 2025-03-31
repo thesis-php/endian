@@ -31,8 +31,6 @@ function unpackBytes(string $bytes, string $format): string|int|float
 
 /**
  * @internal
- * @template T
- * @param T $value
  * @param non-empty-string $format
  * @return non-empty-string
  */
