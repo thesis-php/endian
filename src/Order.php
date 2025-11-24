@@ -7,12 +7,12 @@ namespace Thesis\Endian;
 /**
  * @api
  */
-enum endian
+enum Order
 {
     case big;
     case little;
-    public const network = self::big;
-    public const native = Internal\native;
+    public const self network = self::big;
+    public const self native = Internal\native;
 
     /**
      * @return non-empty-string
@@ -30,7 +30,7 @@ enum endian
         $n = $this->unpackUint8($v);
 
         if ($n >= 0x80) {
-            $n -= 0x100;
+            $n -= 0x1_00;
         }
 
         return $n;
@@ -74,8 +74,8 @@ enum endian
     {
         $n = $this->unpackUint16($v);
 
-        if ($n >= 0x8000) {
-            $n -= 0x10000;
+        if ($n >= 0x80_00) {
+            $n -= 0x1_00_00;
         }
 
         return $n;
@@ -126,8 +126,8 @@ enum endian
     {
         $n = $this->unpackUint32($v);
 
-        if ($n >= 0x80000000) {
-            $n -= 0x100000000;
+        if ($n >= 0x80_00_00_00) {
+            $n -= 0x1_00_00_00_00;
         }
 
         return $n;

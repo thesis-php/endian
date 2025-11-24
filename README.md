@@ -21,10 +21,10 @@ declare(strict_types=1);
 
 require_once __DIR__.'/vendor/autoload.php';
 
-use Thesis\Endian\endian;
+use Thesis\Endian;
 
-echo endian::network->unpackInt32(
-    endian::network->packInt32(-200),
+echo Endian\Order::network->unpackInt32(
+    Endian\Order::network->packInt32(-200),
 ); // -200
 ```
 
@@ -37,10 +37,10 @@ declare(strict_types=1);
 
 require_once __DIR__.'/vendor/autoload.php';
 
-use Thesis\Endian\endian;
+use Thesis\Endian;
 
-echo endian::big->unpackInt8(
-    endian::big->packInt8(17),
+echo Endian\Order::big->unpackInt8(
+    Endian\Order::big->packInt8(17),
 ); // 17
 ```
 
@@ -53,10 +53,10 @@ declare(strict_types=1);
 
 require_once __DIR__.'/vendor/autoload.php';
 
-use Thesis\Endian\endian;
+use Thesis\Endian;
 
-echo endian::little->unpackFloat(
-    endian::little->packFloat(2.2),
+echo Endian\Order::little->unpackFloat(
+    Endian\Order::little->packFloat(2.2),
 ); // 2.2
 ```
 
@@ -69,10 +69,10 @@ declare(strict_types=1);
 
 require_once __DIR__.'/vendor/autoload.php';
 
-use Thesis\Endian\endian;
+use Thesis\Endian;
 
-echo endian::native->unpackInt64(
-    endian::native->packInt64(\PHP_INT_MAX),
+echo Endian\Order::native->unpackInt64(
+    Endian\Order::native->packInt64(\PHP_INT_MAX),
 ); // 9223372036854775807
 ```
 
