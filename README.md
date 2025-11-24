@@ -15,12 +15,6 @@ composer require thesis/endian
 1. In `network` (`big endian`) byte order.
 
 ```php
-<?php
-
-declare(strict_types=1);
-
-require_once __DIR__.'/vendor/autoload.php';
-
 use Thesis\Endian;
 
 echo Endian\Order::network->unpackInt32(
@@ -31,12 +25,6 @@ echo Endian\Order::network->unpackInt32(
 2. In `big endian` byte order.
 
 ```php
-<?php
-
-declare(strict_types=1);
-
-require_once __DIR__.'/vendor/autoload.php';
-
 use Thesis\Endian;
 
 echo Endian\Order::big->unpackInt8(
@@ -47,12 +35,6 @@ echo Endian\Order::big->unpackInt8(
 3. In `little endian` byte order.
 
 ```php
-<?php
-
-declare(strict_types=1);
-
-require_once __DIR__.'/vendor/autoload.php';
-
 use Thesis\Endian;
 
 echo Endian\Order::little->unpackFloat(
@@ -63,12 +45,6 @@ echo Endian\Order::little->unpackFloat(
 4. In `native endian` byte order.
 
 ```php
-<?php
-
-declare(strict_types=1);
-
-require_once __DIR__.'/vendor/autoload.php';
-
 use Thesis\Endian;
 
 echo Endian\Order::native->unpackInt64(
