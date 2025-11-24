@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Thesis\Endian\Internal;
 
-use Thesis\Endian\endian;
+use Thesis\Endian\Order;
 
 if (!\defined('Thesis\Endian\Internal\native')) {
-    \define('Thesis\Endian\Internal\native', namespace\isLittleEndianMachine() ? endian::little : endian::big);
+    \define('Thesis\Endian\Internal\native', namespace\isLittleEndianMachine() ? Order::little : Order::big);
 }
 
 /**

@@ -7,12 +7,12 @@ namespace Thesis\Endian;
 /**
  * @api
  */
-enum endian
+enum Order
 {
     case big;
     case little;
-    public const network = self::big;
-    public const native = Internal\native;
+    public const self network = self::big;
+    public const self native = Internal\native;
 
     /**
      * @return non-empty-string
