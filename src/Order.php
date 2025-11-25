@@ -4,50 +4,73 @@ declare(strict_types=1);
 
 namespace Thesis\Endian;
 
+use BcMath\Number;
+
 /**
  * @api
+ * @phpstan-type Int8 = int<-128, 127>
+ * @phpstan-type Uint8 = int<0, 255>
+ * @phpstan-type Int16 = int<-32768, 32767>
+ * @phpstan-type Uint16 = int<0, 65535>
+ * @phpstan-type Int32 = int<-2147483648, 2147483647>
+ * @phpstan-type Uint32 = int<0, 4294967295>
+ * @phpstan-type Int64 = int<-9223372036854775808, 9223372036854775807>
+ * @phpstan-type Uint64 = int<0, 18446744073709551615>
  */
 enum Order
 {
     case big;
     case little;
     public const self network = self::big;
-    public const self native = Internal\native;
+
+    public static function native(): self
+    {
+        /** @var ?self $order */
+        static $order;
+        $order ??= isLittleEndianMachine() ? Order::little : Order::big;
+
+        return $order;
+    }
 
     /**
+     * @param Int8 $num
      * @return non-empty-string
      */
-    public function packInt8(int $v): string
+    public function packInt8(int $num): string
     {
-        return \chr($v);
+        if ($num < 0) {
+            $num += 256;
+        }
+
+        return $this->packUint8($num);
     }
 
     /**
      * @param non-empty-string $v
+     * @return Int8
      */
     public function unpackInt8(string $v): int
     {
-        $n = $this->unpackUint8($v);
-
-        if ($n >= 0x80) {
-            $n -= 0x100;
+        $num = $this->unpackUint8($v);
+        if ($num >= 128) {
+            $num -= 256;
         }
 
-        return $n;
+        return $num;
     }
 
     /**
-     * @param non-negative-int $v
+     * @param Uint8 $num
      * @return non-empty-string
      */
-    public function packUint8(int $v): string
+    public function packUint8(int $num): string
     {
-        return \chr($v);
+        return \chr($num);
     }
 
     /**
      * @param non-empty-string $v
-     * @return int<0, 255>
+     * @return Uint8
      */
     public function unpackUint8(string $v): int
     {
@@ -55,194 +78,169 @@ enum Order
     }
 
     /**
+     * @param Int16 $num
      * @return non-empty-string
      */
-    public function packInt16(int $v): string
+    public function packInt16(int $num): string
     {
-        if ($v < 0) {
-            $v = (1 << 16) + $v;
+        if ($num < 0) {
+            $num += 65536;
         }
 
-        /** @phpstan-ignore argument.type */
-        return $this->packUint16($v);
+        return $this->packUint16($num);
     }
 
     /**
      * @param non-empty-string $v
+     * @return Int16
      */
     public function unpackInt16(string $v): int
     {
-        $n = $this->unpackUint16($v);
-
-        if ($n >= 0x8000) {
-            $n -= 0x10000;
+        $num = $this->unpackUint16($v);
+        if ($num >= 32768) {
+            $num -= 65536;
         }
 
-        return $n;
+        return $num;
     }
 
     /**
-     * @param non-negative-int $v
+     * @param Uint16 $num
      * @return non-empty-string
      */
-    public function packUint16(int $v): string
+    public function packUint16(int $num): string
     {
-        return match ($this) {
-            self::big => \chr($v >> 8) . \chr($v),
-            self::little => \chr($v) . \chr($v >> 8),
-        };
+        return packBytes($num, match ($this) {
+            self::big => 'n',
+            self::little => 'v',
+        });
     }
 
     /**
      * @param non-empty-string $v
-     * @return non-negative-int
+     * @return Uint16
      */
     public function unpackUint16(string $v): int
     {
-        /** @var non-negative-int */
-        return match ($this) {
-            self::big => \ord($v[1]) | \ord($v[0]) << 8,
-            self::little => \ord($v[0]) | \ord($v[1]) << 8,
-        };
+        /** @var Uint16 */
+        return unpackBytes($v, match ($this) {
+            self::big => 'n',
+            self::little => 'v',
+        });
     }
 
     /**
+     * @param Int32 $num
      * @return non-empty-string
      */
-    public function packInt32(int $v): string
+    public function packInt32(int $num): string
     {
-        if ($v < 0) {
-            $v = (1 << 32) + $v;
+        if ($num < 0) {
+            $num += 4294967296;
         }
 
-        /** @phpstan-ignore argument.type */
-        return $this->packUint32($v);
+        return $this->packUint32($num);
     }
 
     /**
      * @param non-empty-string $v
+     * @return Int32
      */
     public function unpackInt32(string $v): int
     {
-        $n = $this->unpackUint32($v);
-
-        if ($n >= 0x80000000) {
-            $n -= 0x100000000;
+        $num = $this->unpackUint32($v);
+        if ($num >= 2147483648) {
+            $num -= 4294967296;
         }
 
-        return $n;
+        return $num;
     }
 
     /**
-     * @param non-negative-int $v
+     * @param Uint32 $num
      * @return non-empty-string
      */
-    public function packUint32(int $v): string
+    public function packUint32(int $num): string
     {
-        return match ($this) {
-            self::big => \chr($v >> 24)
-                . \chr($v >> 16)
-                . \chr($v >> 8)
-                . \chr($v),
-            self::little => \chr($v)
-                . \chr($v >> 8)
-                . \chr($v >> 16)
-                . \chr($v >> 24),
-        };
+        return packBytes($num, match ($this) {
+            self::big => 'N',
+            self::little => 'V',
+        });
     }
 
     /**
      * @param non-empty-string $v
-     * @return non-negative-int
+     * @return Uint32
      */
     public function unpackUint32(string $v): int
     {
-        /** @var non-negative-int */
-        return match ($this) {
-            self::big => \ord($v[3])
-                | \ord($v[2]) << 8
-                | \ord($v[1]) << 16
-                | \ord($v[0]) << 24,
-            self::little => \ord($v[0])
-                | \ord($v[1]) << 8
-                | \ord($v[2]) << 16
-                | \ord($v[3]) << 24,
-        };
+        /** @var Uint32 */
+        return unpackBytes($v, match ($this) {
+            self::big => 'N',
+            self::little => 'V',
+        });
     }
 
     /**
      * @return non-empty-string
      */
-    public function packInt64(int $v): string
+    public function packInt64(Number $num): string
     {
-        return $this->packUint64($v);
+        if ($num->compare(0) < 0) {
+            $num += new Number(2)->pow(64);
+        }
+
+        return $this->packUint64($num);
     }
 
     /**
      * @param non-empty-string $v
      */
-    public function unpackInt64(string $v): int
+    public function unpackInt64(string $v): Number
     {
-        return $this->unpackUint64($v);
+        $num = $this->unpackUint64($v);
+        if ($num->compare(new Number(2)->pow(63)) >= 0) {
+            $num = $num->sub(new Number(2)->pow(64), scale: 0);
+        }
+
+        return $num;
     }
 
     /**
      * @return non-empty-string
      */
-    public function packUint64(int $v): string
+    public function packUint64(Number $num): string
     {
+        $bytes = '';
+
+        for ($i = 0; $i < 8; ++$i) {
+            $bytes .= \chr((int) $num->mod(256)->value);
+            $num = $num->div(256, scale: 0);
+        }
+
         return match ($this) {
-            self::big => \chr($v >> 56)
-                . \chr($v >> 48)
-                . \chr($v >> 40)
-                . \chr($v >> 32)
-                . \chr($v >> 24)
-                . \chr($v >> 16)
-                . \chr($v >> 8)
-                . \chr($v),
-            self::little => \chr($v)
-                . \chr($v >> 8)
-                . \chr($v >> 16)
-                . \chr($v >> 24)
-                . \chr($v >> 32)
-                . \chr($v >> 40)
-                . \chr($v >> 48)
-                . \chr($v >> 56),
+            self::big => strrev($bytes),
+            self::little => $bytes,
         };
     }
 
     /**
      * @param non-empty-string $v
-     * @return non-negative-int
      */
-    public function unpackUint64(string $v): int
+    public function unpackUint64(string $v): Number
     {
         return match ($this) {
-            self::big => \ord($v[7])
-                | \ord($v[6]) << 8
-                | \ord($v[5]) << 16
-                | \ord($v[4]) << 24
-                | \ord($v[3]) << 32
-                | \ord($v[2]) << 40
-                | \ord($v[1]) << 48
-                | \ord($v[0]) << 56,
-            self::little => \ord($v[0])
-                | \ord($v[1]) << 8
-                | \ord($v[2]) << 16
-                | \ord($v[3]) << 24
-                | \ord($v[4]) << 32
-                | \ord($v[5]) << 40
-                | \ord($v[6]) << 48
-                | \ord($v[7]) << 56,
+            self::big => unpackUint64BE($v),
+            self::little => unpackUint64LE($v),
         };
     }
 
     /**
      * @return non-empty-string
      */
-    public function packFloat(float $v): string
+    public function packFloat(float $num): string
     {
-        return Internal\packBytes($v, match ($this) {
+        return packBytes($num, match ($this) {
             self::big => 'G',
             self::little => 'g',
         });
@@ -253,7 +251,7 @@ enum Order
      */
     public function unpackFloat(string $v): float
     {
-        return (float) Internal\unpackBytes($v, match ($this) {
+        return (float) unpackBytes($v, match ($this) {
             self::big => 'G',
             self::little => 'g',
         });
@@ -262,9 +260,9 @@ enum Order
     /**
      * @return non-empty-string
      */
-    public function packDouble(float $v): string
+    public function packDouble(float $num): string
     {
-        return Internal\packBytes($v, match ($this) {
+        return packBytes($num, match ($this) {
             self::big => 'E',
             self::little => 'e',
         });
@@ -275,9 +273,69 @@ enum Order
      */
     public function unpackDouble(string $v): float
     {
-        return (float) Internal\unpackBytes($v, match ($this) {
+        return (float) unpackBytes($v, match ($this) {
             self::big => 'E',
             self::little => 'e',
         });
     }
+}
+
+/**
+ * @internal
+ * @param non-empty-string $v
+ */
+function unpackUint64BE(string $v): Number
+{
+    $num = new Number(0);
+
+    for ($i = 0; $i < 8; ++$i) {
+        $num += new Number(\ord($v[$i])) * new Number(256)->pow(7 - $i, scale: 0);
+    }
+
+    return $num;
+}
+
+/**
+ * @internal
+ * @param non-empty-string $v
+ */
+function unpackUint64LE(string $v): Number
+{
+    $num = new Number(0);
+
+    for ($i = 0; $i < 8; ++$i) {
+        $num += new Number(\ord($v[$i])) * new Number(256)->pow($i, scale: 0);
+    }
+
+    return $num;
+}
+
+/**
+ * @internal
+ * @param non-empty-string $bytes
+ * @param non-empty-string $format
+ */
+function unpackBytes(string $bytes, string $format): string|int|float
+{
+    /** @var string|int|float */
+    return unpack($format, $bytes)[1] ?? throw new \RuntimeException(\sprintf('Cannot unpack "%s" using "%s".', $bytes, $format));
+}
+
+/**
+ * @internal
+ * @param non-empty-string $format
+ * @return non-empty-string
+ */
+function packBytes(mixed $value, string $format): string
+{
+    /** @var non-empty-string */
+    return pack($format, $value);
+}
+
+/**
+ * @internal
+ */
+function isLittleEndianMachine(): bool
+{
+    return (int) unpackBytes("\x01\x00", 'S') === 1;
 }
