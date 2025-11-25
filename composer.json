@@ -18,21 +18,20 @@
         }
     ],
     "require": {
-        "php": "^8.3"
+        "php": "^8.4",
+        "ext-bcmath": "*"
     },
     "require-dev": {
         "bamarni/composer-bin-plugin": "^1.8.2",
         "ergebnis/composer-normalize": "^2.48.2",
-        "phpunit/phpunit": "^10.5.58"
+        "phpunit/phpunit": "^10.5.58",
+        "symfony/var-dumper": "^7.3"
     },
     "minimum-stability": "stable",
     "autoload": {
         "psr-4": {
             "Thesis\\Endian\\": "src/"
-        },
-        "files": [
-            "src/Internal/functions.php"
-        ]
+        }
     },
     "autoload-dev": {
         "psr-4": {
@@ -46,7 +45,7 @@
         },
         "bump-after-update": "dev",
         "platform": {
-            "php": "8.3"
+            "php": "8.4"
         },
         "sort-packages": true
     },

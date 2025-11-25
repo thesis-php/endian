@@ -46,10 +46,13 @@ echo Endian\Order::little->unpackFloat(
 
 ```php
 use Thesis\Endian;
+use BcMath\Number;
 
-echo Endian\Order::native->unpackInt64(
-    Endian\Order::native->packInt64(\PHP_INT_MAX),
-); // 9223372036854775807
+echo Endian\Order::native()
+    ->unpackInt64(
+        Endian\Order::native()->packInt64(new Number('9223372036854775807')),
+    )
+    ->value; // 9223372036854775807
 ```
 
 ### Supported types:

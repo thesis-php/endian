@@ -1,6 +1,6 @@
 FROM composer:2.8 AS composer
 FROM mlocati/php-extension-installer:2.7 AS php-extension-installer
-FROM php:8.3-cli-bookworm AS php-dev
+FROM php:8.4-cli-bookworm AS php-dev
 
 COPY --from=composer /usr/bin/composer /usr/bin/
 COPY --from=php-extension-installer /usr/bin/install-php-extensions /usr/bin/
@@ -18,7 +18,7 @@ EOF
 
 RUN <<EOF
     set -e
-    install-php-extensions opcache pcntl sockets pgsql bcmath gmp intl uv
+    install-php-extensions opcache pcntl sockets pgsql bcmath intl uv
     apt-get remove -q -y ${PHPIZE_DEPS} ${BUILD_DEPENDS}
 EOF
 

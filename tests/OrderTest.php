@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Thesis\Endian;
 
+use BcMath\Number;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 
@@ -68,7 +69,13 @@ final class OrderTest extends TestCase
     {
         foreach ([Order::big, Order::little] as $endian) {
             foreach ($this->sequence([-32_768, 32_767], [PHP_INT_MIN], [PHP_INT_MAX]) as $i) {
-                self::assertSame($i, $endian->unpackInt64($endian->packInt64($i)));
+                $num = new Number($i);
+
+                self::assertEquals($num, $endian->unpackInt64($endian->packInt64($num)));
+            }
+
+            foreach ([new Number('9223372036854775807'), new Number('-9223372036854775808')] as $num) {
+                self::assertEquals($num, $endian->unpackInt64($endian->packInt64($num)));
             }
         }
     }
@@ -77,7 +84,13 @@ final class OrderTest extends TestCase
     {
         foreach ([Order::big, Order::little] as $endian) {
             foreach ($this->sequence([0, 65_535], [PHP_INT_MAX]) as $i) {
-                self::assertSame($i, $endian->unpackUint64($endian->packUint64($i)));
+                $num = new Number($i);
+
+                self::assertEquals($num, $endian->unpackUint64($endian->packUint64($num)));
+            }
+
+            foreach ([new Number('18446744073709551615')] as $num) {
+                self::assertEquals($num, $endian->unpackUint64($endian->packUint64($num)));
             }
         }
     }
