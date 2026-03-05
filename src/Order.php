@@ -218,6 +218,7 @@ enum Order
             $num = $num->div(256, scale: 0);
         }
 
+        /** @var non-empty-string */
         return match ($this) {
             self::big => strrev($bytes),
             self::little => $bytes,

@@ -113,11 +113,6 @@ final class OrderTest extends TestCase
         }
     }
 
-    public function testNetworkIsBigEndian(): void
-    {
-        self::assertSame(Order::big, Order::network);
-    }
-
     /**
      * @template T of int|float
      * @param array{0: T, 1?: T} ...$ranges

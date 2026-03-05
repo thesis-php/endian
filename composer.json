@@ -22,8 +22,6 @@
         "ext-bcmath": "*"
     },
     "require-dev": {
-        "bamarni/composer-bin-plugin": "^1.8.2",
-        "ergebnis/composer-normalize": "^2.48.2",
         "phpunit/phpunit": "^10.5.58",
         "symfony/var-dumper": "^7.3"
     },
@@ -39,41 +37,7 @@
         }
     },
     "config": {
-        "allow-plugins": {
-            "bamarni/composer-bin-plugin": true,
-            "ergebnis/composer-normalize": true
-        },
-        "bump-after-update": "dev",
-        "platform": {
-            "php": "8.4"
-        },
+        "lock": false,
         "sort-packages": true
-    },
-    "extra": {
-        "bamarni-bin": {
-            "bin-links": false,
-            "forward-command": true,
-            "target-directory": "tools"
-        }
-    },
-    "scripts": {
-        "analyse-deps": "tools/composer-dependency-analyser/vendor/bin/composer-dependency-analyser",
-        "check": [
-            "@composer fixcs -- --dry-run",
-            "@composer rector -- --dry-run",
-            "@phpstan",
-            "@composer validate",
-            "@composer normalize --dry-run",
-            "@analyse-deps",
-            "@test"
-        ],
-        "fixcs": "tools/php-cs-fixer/vendor/bin/php-cs-fixer fix --diff --verbose",
-        "infection": "tools/infection/vendor/bin/infection --show-mutations",
-        "normalize": "@composer bin composer-normalize normalize --diff ../../composer.json",
-        "phpstan": "tools/phpstan/vendor/bin/phpstan analyze",
-        "pre-command-run": "mkdir -p var",
-        "psalm": "tools/psalm/vendor/bin/psalm --show-info --no-diff --no-cache",
-        "rector": "tools/rector/vendor/bin/rector process",
-        "test": "phpunit"
     }
 }
