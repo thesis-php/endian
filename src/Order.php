@@ -214,10 +214,13 @@ enum Order
         $bytes = '';
 
         for ($i = 0; $i < 8; ++$i) {
-            $bytes .= \chr((int) $num->mod(256)->value);
+            /** @var int<0, 255> $value */
+            $value = (int) $num->mod(256)->value;
+            $bytes .= \chr($value);
             $num = $num->div(256, scale: 0);
         }
 
+        /** @var non-empty-string */
         return match ($this) {
             self::big => strrev($bytes),
             self::little => $bytes,
