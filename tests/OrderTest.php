@@ -13,7 +13,7 @@ final class OrderTest extends TestCase
 {
     public function testInt8(): void
     {
-        foreach ([Order::Big, Order::Little] as $endian) {
+        foreach (Order::cases() as $endian) {
             foreach ($this->sequence([-128, 127]) as $i) {
                 self::assertSame($i, $endian->unpackInt8($endian->packInt8($i)));
             }
@@ -22,7 +22,7 @@ final class OrderTest extends TestCase
 
     public function testUint8(): void
     {
-        foreach ([Order::Big, Order::Little] as $endian) {
+        foreach (Order::cases() as $endian) {
             foreach ($this->sequence([0, 255]) as $i) {
                 self::assertSame($i, $endian->unpackUint8($endian->packUint8($i)));
             }
@@ -31,7 +31,7 @@ final class OrderTest extends TestCase
 
     public function testInt16(): void
     {
-        foreach ([Order::Big, Order::Little] as $endian) {
+        foreach (Order::cases() as $endian) {
             foreach ($this->sequence([-32_768, 32_767]) as $i) {
                 self::assertSame($i, $endian->unpackInt16($endian->packInt16($i)));
             }
@@ -40,7 +40,7 @@ final class OrderTest extends TestCase
 
     public function testUint16(): void
     {
-        foreach ([Order::Big, Order::Little] as $endian) {
+        foreach (Order::cases() as $endian) {
             foreach ($this->sequence([0, 65_535]) as $i) {
                 self::assertSame($i, $endian->unpackUint16($endian->packUint16($i)));
             }
@@ -49,7 +49,7 @@ final class OrderTest extends TestCase
 
     public function testInt32(): void
     {
-        foreach ([Order::Big, Order::Little] as $endian) {
+        foreach (Order::cases() as $endian) {
             foreach ($this->sequence([-32_768, 32_767], [-2_147_483_648], [2_147_483_647]) as $i) {
                 self::assertSame($i, $endian->unpackInt32($endian->packInt32($i)));
             }
@@ -58,7 +58,7 @@ final class OrderTest extends TestCase
 
     public function testUint32(): void
     {
-        foreach ([Order::Big, Order::Little] as $endian) {
+        foreach (Order::cases() as $endian) {
             foreach ($this->sequence([0, 65_535], [4_294_967_295]) as $i) {
                 self::assertSame($i, $endian->unpackUint32($endian->packUint32($i)));
             }
@@ -67,7 +67,7 @@ final class OrderTest extends TestCase
 
     public function testInt64(): void
     {
-        foreach ([Order::Big, Order::Little] as $endian) {
+        foreach (Order::cases() as $endian) {
             foreach ($this->sequence([-32_768, 32_767], [PHP_INT_MIN], [PHP_INT_MAX]) as $i) {
                 $num = new Number($i);
 
@@ -82,7 +82,7 @@ final class OrderTest extends TestCase
 
     public function testUint64(): void
     {
-        foreach ([Order::Big, Order::Little] as $endian) {
+        foreach (Order::cases() as $endian) {
             foreach ($this->sequence([0, 65_535], [PHP_INT_MAX]) as $i) {
                 $num = new Number($i);
 
@@ -97,7 +97,7 @@ final class OrderTest extends TestCase
 
     public function testFloat(): void
     {
-        foreach ([Order::Big, Order::Little] as $endian) {
+        foreach (Order::cases() as $endian) {
             foreach ($this->sequence([-32_768, 32_767]) as $i) {
                 self::assertSame($i * 1.0, $endian->unpackFloat($endian->packFloat($i)));
             }
@@ -106,7 +106,7 @@ final class OrderTest extends TestCase
 
     public function testDouble(): void
     {
-        foreach ([Order::Big, Order::Little] as $endian) {
+        foreach (Order::cases() as $endian) {
             foreach ($this->sequence([-32_768, 32_767], [2.225_073_858_507_2E-308], [1.797_693_134_862_3], [PHP_INT_MIN], [PHP_INT_MAX]) as $i) {
                 self::assertSame($i * 1.0, $endian->unpackDouble($endian->packDouble($i)));
             }

@@ -5,17 +5,17 @@ declare(strict_types=1);
 namespace Thesis\Endian;
 
 use BcMath\Number;
+use Thesis\Endian\Internal\Ints;
 
 /**
  * @api
- * @phpstan-type Int8 = int<-128, 127>
- * @phpstan-type Uint8 = int<0, 255>
- * @phpstan-type Int16 = int<-32768, 32767>
- * @phpstan-type Uint16 = int<0, 65535>
- * @phpstan-type Int32 = int<-2147483648, 2147483647>
- * @phpstan-type Uint32 = int<0, 4294967295>
- * @phpstan-type Int64 = int<-9223372036854775808, 9223372036854775807>
- * @phpstan-type Uint64 = int<0, 18446744073709551615>
+ *
+ * @phpstan-import-type Int8 from Ints
+ * @phpstan-import-type Uint8 from Ints
+ * @phpstan-import-type Int16 from Ints
+ * @phpstan-import-type Uint16 from Ints
+ * @phpstan-import-type Int32 from Ints
+ * @phpstan-import-type Uint32 from Ints
  */
 enum Order
 {
@@ -42,13 +42,14 @@ enum Order
     }
 
     /**
-     * @param Int8 $num
      * @return non-empty-string
      */
     public function packInt8(int $num): string
     {
+        \assert(Ints::isInt8($num), \sprintf('Expected an int8 value, got %d.', $num));
+
         if ($num < 0) {
-            $num += 256;
+            $num += Ints::UINT8_MOD;
         }
 
         return $this->packUint8($num);
@@ -61,19 +62,21 @@ enum Order
     public function unpackInt8(string $v): int
     {
         $num = $this->unpackUint8($v);
-        if ($num >= 128) {
-            $num -= 256;
+        if ($num > Ints::INT8_MAX) {
+            $num -= Ints::UINT8_MOD;
         }
 
         return $num;
     }
 
     /**
-     * @param Uint8 $num
+     * @param non-negative-int $num
      * @return non-empty-string
      */
     public function packUint8(int $num): string
     {
+        \assert(Ints::isUint8($num), \sprintf('Expected a uint8 value, got %d.', $num));
+
         return \chr($num);
     }
 
@@ -87,13 +90,14 @@ enum Order
     }
 
     /**
-     * @param Int16 $num
      * @return non-empty-string
      */
     public function packInt16(int $num): string
     {
+        \assert(Ints::isInt16($num), \sprintf('Expected an int16 value, got %d.', $num));
+
         if ($num < 0) {
-            $num += 65536;
+            $num += Ints::UINT16_MOD;
         }
 
         return $this->packUint16($num);
@@ -106,19 +110,21 @@ enum Order
     public function unpackInt16(string $v): int
     {
         $num = $this->unpackUint16($v);
-        if ($num >= 32768) {
-            $num -= 65536;
+        if ($num > Ints::INT16_MAX) {
+            $num -= Ints::UINT16_MOD;
         }
 
         return $num;
     }
 
     /**
-     * @param Uint16 $num
+     * @param non-negative-int $num
      * @return non-empty-string
      */
     public function packUint16(int $num): string
     {
+        \assert(Ints::isUint16($num), \sprintf('Expected a uint16 value, got %d.', $num));
+
         return self::packBytes($num, match ($this) {
             self::Big => 'n',
             self::Little => 'v',
@@ -139,13 +145,14 @@ enum Order
     }
 
     /**
-     * @param Int32 $num
      * @return non-empty-string
      */
     public function packInt32(int $num): string
     {
+        \assert(Ints::isInt32($num), \sprintf('Expected an int32 value, got %d.', $num));
+
         if ($num < 0) {
-            $num += 4294967296;
+            $num += Ints::UINT32_MOD;
         }
 
         return $this->packUint32($num);
@@ -158,19 +165,21 @@ enum Order
     public function unpackInt32(string $v): int
     {
         $num = $this->unpackUint32($v);
-        if ($num >= 2147483648) {
-            $num -= 4294967296;
+        if ($num > Ints::INT32_MAX) {
+            $num -= Ints::UINT32_MOD;
         }
 
         return $num;
     }
 
     /**
-     * @param Uint32 $num
+     * @param non-negative-int $num
      * @return non-empty-string
      */
     public function packUint32(int $num): string
     {
+        \assert(Ints::isUint32($num), \sprintf('Expected a uint32 value, got %d.', $num));
+
         return self::packBytes($num, match ($this) {
             self::Big => 'N',
             self::Little => 'V',
@@ -195,8 +204,10 @@ enum Order
      */
     public function packInt64(Number $num): string
     {
-        if ($num->compare(0) < 0) {
-            $num += new Number(2)->pow(64);
+        \assert(Ints::isInt64($num), \sprintf('Expected an int64 value, got %s.', $num));
+
+        if ($num < 0) {
+            $num += Ints::UINT64_MOD;
         }
 
         return $this->packUint64($num);
@@ -208,8 +219,8 @@ enum Order
     public function unpackInt64(string $v): Number
     {
         $num = $this->unpackUint64($v);
-        if ($num->compare(new Number(2)->pow(63)) >= 0) {
-            $num = $num->sub(new Number(2)->pow(64), scale: 0);
+        if ($num > Ints::INT64_MAX) {
+            $num -= Ints::UINT64_MOD;
         }
 
         return $num;
@@ -220,6 +231,8 @@ enum Order
      */
     public function packUint64(Number $num): string
     {
+        \assert(Ints::isUint64($num), \sprintf('Expected a uint64 value, got %s.', $num));
+
         $bytes = '';
 
         for ($i = 0; $i < 8; ++$i) {
