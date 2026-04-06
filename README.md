@@ -17,8 +17,8 @@ composer require thesis/endian
 ```php
 use Thesis\Endian;
 
-echo Endian\Order::network->unpackInt32(
-    Endian\Order::network->packInt32(-200),
+echo Endian\Order::Network->unpackInt32(
+    Endian\Order::Network->packInt32(-200),
 ); // -200
 ```
 
@@ -27,8 +27,8 @@ echo Endian\Order::network->unpackInt32(
 ```php
 use Thesis\Endian;
 
-echo Endian\Order::big->unpackInt8(
-    Endian\Order::big->packInt8(17),
+echo Endian\Order::Big->unpackInt8(
+    Endian\Order::Big->packInt8(17),
 ); // 17
 ```
 
@@ -37,8 +37,8 @@ echo Endian\Order::big->unpackInt8(
 ```php
 use Thesis\Endian;
 
-echo Endian\Order::little->unpackFloat(
-    Endian\Order::little->packFloat(2.2),
+echo Endian\Order::Little->unpackFloat(
+    Endian\Order::Little->packFloat(2.2),
 ); // 2.2
 ```
 

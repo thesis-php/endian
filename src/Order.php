@@ -19,15 +19,24 @@ use BcMath\Number;
  */
 enum Order
 {
-    case big;
-    case little;
-    public const self network = self::big;
+    case Big;
+    case Little;
+    public const self Network = self::Big;
+
+    #[\Deprecated('Use `Thesis\Endian\Order::Big` instead. Will be removed in 0.4.0.', '0.3.1')]
+    public const self big = self::Big;
+
+    #[\Deprecated('Use `Thesis\Endian\Order::Little` instead. Will be removed in 0.4.0.', '0.3.1')]
+    public const self little = self::Little;
+
+    #[\Deprecated('Use `Thesis\Endian\Order::Network` instead. Will be removed in 0.4.0.', '0.3.1')]
+    public const self network = self::Network;
 
     public static function native(): self
     {
         /** @var ?self $order */
         static $order;
-        $order ??= isLittleEndianMachine() ? Order::little : Order::big;
+        $order ??= isLittleEndianMachine() ? Order::Little : Order::Big;
 
         return $order;
     }
@@ -111,8 +120,8 @@ enum Order
     public function packUint16(int $num): string
     {
         return packBytes($num, match ($this) {
-            self::big => 'n',
-            self::little => 'v',
+            self::Big => 'n',
+            self::Little => 'v',
         });
     }
 
@@ -124,8 +133,8 @@ enum Order
     {
         /** @var Uint16 */
         return unpackBytes($v, match ($this) {
-            self::big => 'n',
-            self::little => 'v',
+            self::Big => 'n',
+            self::Little => 'v',
         });
     }
 
@@ -163,8 +172,8 @@ enum Order
     public function packUint32(int $num): string
     {
         return packBytes($num, match ($this) {
-            self::big => 'N',
-            self::little => 'V',
+            self::Big => 'N',
+            self::Little => 'V',
         });
     }
 
@@ -176,8 +185,8 @@ enum Order
     {
         /** @var Uint32 */
         return unpackBytes($v, match ($this) {
-            self::big => 'N',
-            self::little => 'V',
+            self::Big => 'N',
+            self::Little => 'V',
         });
     }
 
@@ -222,8 +231,8 @@ enum Order
 
         /** @var non-empty-string */
         return match ($this) {
-            self::big => strrev($bytes),
-            self::little => $bytes,
+            self::Big => strrev($bytes),
+            self::Little => $bytes,
         };
     }
 
@@ -233,8 +242,8 @@ enum Order
     public function unpackUint64(string $v): Number
     {
         return match ($this) {
-            self::big => unpackUint64BE($v),
-            self::little => unpackUint64LE($v),
+            self::Big => unpackUint64BE($v),
+            self::Little => unpackUint64LE($v),
         };
     }
 
@@ -244,8 +253,8 @@ enum Order
     public function packFloat(float $num): string
     {
         return packBytes($num, match ($this) {
-            self::big => 'G',
-            self::little => 'g',
+            self::Big => 'G',
+            self::Little => 'g',
         });
     }
 
@@ -255,8 +264,8 @@ enum Order
     public function unpackFloat(string $v): float
     {
         return (float) unpackBytes($v, match ($this) {
-            self::big => 'G',
-            self::little => 'g',
+            self::Big => 'G',
+            self::Little => 'g',
         });
     }
 
@@ -266,8 +275,8 @@ enum Order
     public function packDouble(float $num): string
     {
         return packBytes($num, match ($this) {
-            self::big => 'E',
-            self::little => 'e',
+            self::Big => 'E',
+            self::Little => 'e',
         });
     }
 
@@ -277,8 +286,8 @@ enum Order
     public function unpackDouble(string $v): float
     {
         return (float) unpackBytes($v, match ($this) {
-            self::big => 'E',
-            self::little => 'e',
+            self::Big => 'E',
+            self::Little => 'e',
         });
     }
 }
