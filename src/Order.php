@@ -36,7 +36,7 @@ enum Order
     {
         /** @var ?self $order */
         static $order;
-        $order ??= isLittleEndianMachine() ? Order::Little : Order::Big;
+        $order ??= self::isLittleEndianMachine() ? Order::Little : Order::Big;
 
         return $order;
     }
@@ -119,7 +119,7 @@ enum Order
      */
     public function packUint16(int $num): string
     {
-        return packBytes($num, match ($this) {
+        return self::packBytes($num, match ($this) {
             self::Big => 'n',
             self::Little => 'v',
         });
@@ -132,7 +132,7 @@ enum Order
     public function unpackUint16(string $v): int
     {
         /** @var Uint16 */
-        return unpackBytes($v, match ($this) {
+        return self::unpackBytes($v, match ($this) {
             self::Big => 'n',
             self::Little => 'v',
         });
@@ -171,7 +171,7 @@ enum Order
      */
     public function packUint32(int $num): string
     {
-        return packBytes($num, match ($this) {
+        return self::packBytes($num, match ($this) {
             self::Big => 'N',
             self::Little => 'V',
         });
@@ -184,7 +184,7 @@ enum Order
     public function unpackUint32(string $v): int
     {
         /** @var Uint32 */
-        return unpackBytes($v, match ($this) {
+        return self::unpackBytes($v, match ($this) {
             self::Big => 'N',
             self::Little => 'V',
         });
@@ -242,8 +242,8 @@ enum Order
     public function unpackUint64(string $v): Number
     {
         return match ($this) {
-            self::Big => unpackUint64BE($v),
-            self::Little => unpackUint64LE($v),
+            self::Big => self::unpackUint64BE($v),
+            self::Little => self::unpackUint64LE($v),
         };
     }
 
@@ -252,7 +252,7 @@ enum Order
      */
     public function packFloat(float $num): string
     {
-        return packBytes($num, match ($this) {
+        return self::packBytes($num, match ($this) {
             self::Big => 'G',
             self::Little => 'g',
         });
@@ -263,7 +263,7 @@ enum Order
      */
     public function unpackFloat(string $v): float
     {
-        return (float) unpackBytes($v, match ($this) {
+        return (float) self::unpackBytes($v, match ($this) {
             self::Big => 'G',
             self::Little => 'g',
         });
@@ -274,7 +274,7 @@ enum Order
      */
     public function packDouble(float $num): string
     {
-        return packBytes($num, match ($this) {
+        return self::packBytes($num, match ($this) {
             self::Big => 'E',
             self::Little => 'e',
         });
@@ -285,69 +285,63 @@ enum Order
      */
     public function unpackDouble(string $v): float
     {
-        return (float) unpackBytes($v, match ($this) {
+        return (float) self::unpackBytes($v, match ($this) {
             self::Big => 'E',
             self::Little => 'e',
         });
     }
-}
 
-/**
- * @internal
- * @param non-empty-string $v
- */
-function unpackUint64BE(string $v): Number
-{
-    $num = new Number(0);
+    /**
+     * @internal
+     * @param non-empty-string $v
+     */
+    private static function unpackUint64BE(string $v): Number
+    {
+        $num = new Number(0);
 
-    for ($i = 0; $i < 8; ++$i) {
-        $num += new Number(\ord($v[$i])) * new Number(256)->pow(7 - $i, scale: 0);
+        for ($i = 0; $i < 8; ++$i) {
+            $num += new Number(\ord($v[$i])) * new Number(256)->pow(7 - $i, scale: 0);
+        }
+
+        return $num;
     }
 
-    return $num;
-}
+    /**
+     * @param non-empty-string $v
+     */
+    private static function unpackUint64LE(string $v): Number
+    {
+        $num = new Number(0);
 
-/**
- * @internal
- * @param non-empty-string $v
- */
-function unpackUint64LE(string $v): Number
-{
-    $num = new Number(0);
+        for ($i = 0; $i < 8; ++$i) {
+            $num += new Number(\ord($v[$i])) * new Number(256)->pow($i, scale: 0);
+        }
 
-    for ($i = 0; $i < 8; ++$i) {
-        $num += new Number(\ord($v[$i])) * new Number(256)->pow($i, scale: 0);
+        return $num;
     }
 
-    return $num;
-}
+    /**
+     * @param non-empty-string $bytes
+     * @param non-empty-string $format
+     */
+    private static function unpackBytes(string $bytes, string $format): string|int|float
+    {
+        /** @var string|int|float */
+        return unpack($format, $bytes)[1] ?? throw new \RuntimeException(\sprintf('Cannot unpack "%s" using "%s".', $bytes, $format));
+    }
 
-/**
- * @internal
- * @param non-empty-string $bytes
- * @param non-empty-string $format
- */
-function unpackBytes(string $bytes, string $format): string|int|float
-{
-    /** @var string|int|float */
-    return unpack($format, $bytes)[1] ?? throw new \RuntimeException(\sprintf('Cannot unpack "%s" using "%s".', $bytes, $format));
-}
+    /**
+     * @param non-empty-string $format
+     * @return non-empty-string
+     */
+    private static function packBytes(mixed $value, string $format): string
+    {
+        /** @var non-empty-string */
+        return pack($format, $value);
+    }
 
-/**
- * @internal
- * @param non-empty-string $format
- * @return non-empty-string
- */
-function packBytes(mixed $value, string $format): string
-{
-    /** @var non-empty-string */
-    return pack($format, $value);
-}
-
-/**
- * @internal
- */
-function isLittleEndianMachine(): bool
-{
-    return (int) unpackBytes("\x01\x00", 'S') === 1;
+    private static function isLittleEndianMachine(): bool
+    {
+        return (int) self::unpackBytes("\x01\x00", 'S') === 1;
+    }
 }
