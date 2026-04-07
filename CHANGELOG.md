@@ -11,6 +11,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * Replace `@param` PHPDoc types with `assert()`-based runtime bounds checks in all `pack*` methods.
 
+### Changed
+
+* `packUint64`/`unpackUint64` no longer iterate byte-by-byte with BcMath.
+  Values are now split into two `uint32` chunks and handled with native `pack()`/`unpack()`.
+
 ### Deprecated
 
 * `Int64` and `Uint64` type aliases declared in `Order`.

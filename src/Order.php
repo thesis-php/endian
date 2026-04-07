@@ -234,19 +234,13 @@ enum Order
     {
         \assert(Ints::isUint64($num), \sprintf('Expected a uint64 value, got %s.', $num));
 
-        $bytes = '';
-
-        for ($i = 0; $i < 8; ++$i) {
-            /** @var int<0, 255> $value */
-            $value = (int) $num->mod(256)->value;
-            $bytes .= \chr($value);
-            $num = $num->div(256, scale: 0);
-        }
+        $high = (int) $num->div(Ints::UINT32_MOD, scale: 0)->value;
+        $low = (int) $num->mod(Ints::UINT32_MOD)->value;
 
         /** @var non-empty-string */
         return match ($this) {
-            self::Big => strrev($bytes),
-            self::Little => $bytes,
+            self::Big => pack('NN', $high, $low),
+            self::Little => pack('VV', $low, $high),
         };
     }
 
@@ -255,9 +249,15 @@ enum Order
      */
     public function unpackUint64(string $v): Number
     {
+        /** @var array{1: int, 2: int} */
+        $parts = match ($this) {
+            self::Big => unpack('N2', $v),
+            self::Little => unpack('V2', $v),
+        };
+
         return match ($this) {
-            self::Big => self::unpackUint64BE($v),
-            self::Little => self::unpackUint64LE($v),
+            self::Big => new Number($parts[1]) * Ints::UINT32_MOD + $parts[2],
+            self::Little => new Number($parts[2]) * Ints::UINT32_MOD + $parts[1],
         };
     }
 
@@ -303,35 +303,6 @@ enum Order
             self::Big => 'E',
             self::Little => 'e',
         });
-    }
-
-    /**
-     * @internal
-     * @param non-empty-string $v
-     */
-    private static function unpackUint64BE(string $v): Number
-    {
-        $num = new Number(0);
-
-        for ($i = 0; $i < 8; ++$i) {
-            $num += new Number(\ord($v[$i])) * new Number(256)->pow(7 - $i, scale: 0);
-        }
-
-        return $num;
-    }
-
-    /**
-     * @param non-empty-string $v
-     */
-    private static function unpackUint64LE(string $v): Number
-    {
-        $num = new Number(0);
-
-        for ($i = 0; $i < 8; ++$i) {
-            $num += new Number(\ord($v[$i])) * new Number(256)->pow($i, scale: 0);
-        }
-
-        return $num;
     }
 
     /**
