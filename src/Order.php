@@ -16,6 +16,8 @@ use Thesis\Endian\Internal\Ints;
  * @phpstan-import-type Uint16 from Ints
  * @phpstan-import-type Int32 from Ints
  * @phpstan-import-type Uint32 from Ints
+ *
+ * Deprecated, will be removed in 0.4.0:
  * @phpstan-type Int64 = int<-9223372036854775808, 9223372036854775807>
  * @phpstan-type Uint64 = int<0, 18446744073709551615>
  */

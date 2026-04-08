@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * Replace `@param` PHPDoc types with `assert()`-based runtime bounds checks in all `pack*` methods.
 
+### Deprecated
+
+* `Int64` and `Uint64` type aliases declared in `Order`.
+
 ## [0.3.2] 2026-04-06
 
 ### Deprecated
