@@ -69,13 +69,11 @@ final class OrderTest extends TestCase
     {
         foreach (Order::cases() as $endian) {
             foreach ($this->sequence([-32_768, 32_767], [PHP_INT_MIN], [PHP_INT_MAX]) as $i) {
-                $num = new Number($i);
-
-                self::assertEquals($num, $endian->unpackInt64($endian->packInt64($num)));
+                self::assertSame($i, $endian->unpackInt64($endian->packInt64($i)));
             }
 
-            foreach ([new Number('9223372036854775807'), new Number('-9223372036854775808')] as $num) {
-                self::assertEquals($num, $endian->unpackInt64($endian->packInt64($num)));
+            foreach ([4_294_967_295, 4_294_967_296, -4_294_967_296, -4_294_967_295] as $i) {
+                self::assertSame($i, $endian->unpackInt64($endian->packInt64($i)));
             }
         }
     }

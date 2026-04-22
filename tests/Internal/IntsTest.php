@@ -66,20 +66,10 @@ final class IntsTest extends TestCase
         self::assertSame($expected, Ints::isUint32($num));
     }
 
-    #[TestWith([Ints::INT64_MIN, true])]
-    #[TestWith([Ints::INT64_MAX, true])]
-    /** @phpstan-ignore binaryOp.invalid */
-    #[TestWith([Ints::INT64_MIN - 1, false])]
-    #[TestWith([Ints::INT64_MAX + 1, false])]
-    public function testIsInt64(Number $num, bool $expected): void
-    {
-        self::assertSame($expected, Ints::isInt64($num));
-    }
-
     #[TestWith([new Number(0), true])]
-    #[TestWith([Ints::UINT64_MAX, true])]
+    #[TestWith([new Number('18446744073709551615'), true])]
     #[TestWith([new Number(-1), false])]
-    #[TestWith([Ints::UINT64_MAX + 1, false])]
+    #[TestWith([new Number('18446744073709551616'), false])]
     public function testIsUint64(Number $num, bool $expected): void
     {
         self::assertSame($expected, Ints::isUint64($num));

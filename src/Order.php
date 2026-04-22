@@ -203,28 +203,33 @@ enum Order
     /**
      * @return non-empty-string
      */
-    public function packInt64(Number $num): string
+    public function packInt64(int $num): string
     {
-        \assert(Ints::isInt64($num), \sprintf('Expected an int64 value, got %s.', $num));
+        $high = ($num >> 32) & 0xFFFFFFFF;
+        $low = $num & 0xFFFFFFFF;
 
-        if ($num < 0) {
-            $num += Ints::UINT64_MOD;
-        }
-
-        return $this->packUint64($num);
+        /** @var non-empty-string */
+        return match ($this) {
+            self::Big => pack('NN', $high, $low),
+            self::Little => pack('VV', $low, $high),
+        };
     }
 
     /**
      * @param non-empty-string $v
      */
-    public function unpackInt64(string $v): Number
+    public function unpackInt64(string $v): int
     {
-        $num = $this->unpackUint64($v);
-        if ($num > Ints::INT64_MAX) {
-            $num -= Ints::UINT64_MOD;
-        }
+        /** @var array{1: int, 2: int} */
+        $parts = match ($this) {
+            self::Big => unpack('N2', $v),
+            self::Little => unpack('V2', $v),
+        };
 
-        return $num;
+        return match ($this) {
+            self::Big => ($parts[1] << 32) | $parts[2],
+            self::Little => ($parts[2] << 32) | $parts[1],
+        };
     }
 
     /**
