@@ -9,15 +9,6 @@ use BcMath\Number;
 /**
  * @internal
  *
- * PHP does not allow `new` expressions in class constant initializers,
- * so this namespace-level constant is used as a workaround to define
- * BcMath\Number-based class constants (e.g. INT64_MIN, INT64_MAX).
- */
-const __TWO = new Number(2);
-
-/**
- * @internal
- *
  * @phpstan-type Int8 = int<self::INT8_MIN, self::INT8_MAX>
  * @phpstan-type Uint8 = int<0, self::UINT8_MAX>
  * @phpstan-type Int16 = int<self::INT16_MIN, self::INT16_MAX>
@@ -39,12 +30,6 @@ final readonly class Ints
     public const int INT32_MAX = 2 ** 31 - 1;
     public const int UINT32_MAX = 2 ** 32 - 1;
     public const int UINT32_MOD = 2 ** 32;
-
-    /** @phpstan-ignore unaryOp.invalid */
-    public const Number INT64_MIN = -__TWO ** 63;
-    public const Number INT64_MAX = __TWO ** 63 - 1;
-    public const Number UINT64_MAX = __TWO ** 64 - 1;
-    public const Number UINT64_MOD = __TWO ** 64;
 
     /**
      * @phpstan-assert-if-true Int8 $num
@@ -94,14 +79,12 @@ final readonly class Ints
         return $num >= 0 && $num <= self::UINT32_MAX;
     }
 
-    public static function isInt64(Number $num): bool
-    {
-        return $num >= self::INT64_MIN && $num <= self::INT64_MAX;
-    }
-
     public static function isUint64(Number $num): bool
     {
-        return $num >= 0 && $num <= self::UINT64_MAX;
+        /** @var Number */
+        static $uint64Max = new Number(2) ** 64 - 1;
+
+        return $num >= 0 && $num <= $uint64Max;
     }
 
     private function __construct() {}

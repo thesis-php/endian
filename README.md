@@ -49,12 +49,17 @@ overhead on every pack/unpack — important in tight loops typical of binary pro
 
 ### 64-bit integers
 
-64-bit values use [`BcMath\Number`](https://www.php.net/manual/en/class.bcmath-number.php)
-to handle the full unsigned range beyond `PHP_INT_MAX`:
+Signed `int64` uses native PHP `int` — on a 64-bit platform the ranges are identical.
+
+Unsigned `uint64` uses [`BcMath\Number`](https://www.php.net/manual/en/class.bcmath-number.php)
+to handle values beyond `PHP_INT_MAX`:
 
 ```php
 use Thesis\Endian;
 use BcMath\Number;
+
+$bytes = Endian\Order::Big->packInt64(PHP_INT_MIN);
+$value = Endian\Order::Big->unpackInt64($bytes); // PHP_INT_MIN
 
 $bytes = Endian\Order::Big->packUint64(new Number('18446744073709551615'));
 $value = Endian\Order::Big->unpackUint64($bytes); // 18446744073709551615
@@ -70,7 +75,7 @@ $value = Endian\Order::Big->unpackUint64($bytes); // 18446744073709551615
 | `uint16` | `int`           | `0 .. 65535`                                                                            |
 | `int32`  | `int`           | `−2147483648 .. 2147483647`                                                             |
 | `uint32` | `int`           | `0 .. 4294967295`                                                                       |
-| `int64`  | `BcMath\Number` | `−2⁶³ .. 2⁶³−1`                                                                         |
+| `int64`  | `int`           | `−2⁶³ .. 2⁶³−1`                                                                         |
 | `uint64` | `BcMath\Number` | `0 .. 2⁶⁴−1`                                                                            |
 | `float`  | `float`         | [32-bit IEEE 754](https://en.wikipedia.org/wiki/Single-precision_floating-point_format) |
 | `double` | `float`         | [64-bit IEEE 754](https://en.wikipedia.org/wiki/Double-precision_floating-point_format) |
